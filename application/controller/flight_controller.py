@@ -231,7 +231,7 @@ def add_on_ssr():
             meal_price = meal.get('Price')
             print(meal_price)
             break
-
+  
     # Find the selected seat in the SSR response
     for seat in payload.get('Seats', []):
         if seat['SeatNo'] == seat_selected:
