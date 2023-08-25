@@ -7,6 +7,8 @@ from datetime import datetime
 def flight_search():
     # Get the request payload
     payload = request.get_json()
+    journeytype = payload['JourneyType']
+    session['journeytype']=journeytype
 
     tob_api_details = db.session.query(TobApiDetails).first()
     token_id = tob_api_details.tokenId if tob_api_details else None
@@ -79,7 +81,21 @@ def flight_search_farerules():
 
     # Process the response and return the result
     if response.status_code == 200:
-        result = response.json()
+        result = response.json() 
+        uid = str(uuid.uuid4())
+        current_datetime = datetime.now()
+        create_at = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+        update_at = create_at
+        is_active= True
+        result_index = payload['ResultIndex']
+        trace_id = payload['TraceId']
+        journey_type =session.get('journeytype')
+        fare_rule = json.dumps(result)
+        flight_details = FlightDetails(uuid=uid,is_active=is_active,create_at=create_at, update_at=update_at,result_index=result_index,trace_id=trace_id,fare_rules=fare_rule,journey_type=journey_type)
+        db.session.add(flight_details)
+        db.session.commit()
+        db.session.flush()
+    
         return jsonify(result)
     else:
         return jsonify({'error': 'An error occurred'})
@@ -88,10 +104,7 @@ def flight_search_farerules():
 
 
 def flight_search_fareQuote():
-    # Get the request payload
     payload = request.get_json()
-    # print(payload)
-
     # Fetch values from the database
     search_details = db.session.query(SearchDetails).order_by(SearchDetails.id.desc()).first()
     tob_api_details = db.session.query(TobApiDetails).first()
@@ -114,11 +127,14 @@ def flight_search_fareQuote():
     # Process the response and return the result
     if response.status_code == 200:
         result = response.json()
-        # print("&&&&&&&&&&&&&&&&&&&&",result)
-
-        # Get the value of IsLCC
+        flight_details = db.session.query(FlightDetails).order_by(FlightDetails.id.desc()).first()
         is_lcc = result['Response']['Results']['IsLCC']
         Published_Fare = result['Response']['Results']['Fare']['PublishedFare']
+        fare_quote = json.dumps(result)
+        if flight_details:
+            flight_details.fare_quote = fare_quote
+            flight_details.is_lcc = is_lcc
+            db.session.commit()
 
         # Store the value in a session variable
         session['is_lcc'] = is_lcc
@@ -138,42 +154,31 @@ def flight_search_fareQuote():
                 Adult_yqtax = passenger_type['YQTax'] / passenger_type['PassengerCount']
                 Adult_AdditionalTxnFeeOfrd = passenger_type['AdditionalTxnFeeOfrd'] / passenger_type['PassengerCount']
                 Adult_AdditionalTxnFeePub = passenger_type['AdditionalTxnFeePub'] / passenger_type['PassengerCount']
-
-                # print("Adult_BaseFare", Adult_BaseFare, "\nAdult_Tax", Adult_Tax, "\nAdult_othercharge", Adult_othercharge, "\nAdult_yqtax", Adult_yqtax,
-                #       "\nAdult_AdditionalTxnFeeOfrd", Adult_AdditionalTxnFeeOfrd, "\nAdult_AdditionalTxnFeePub", Adult_AdditionalTxnFeePub)
                 Adult = {"Adult_BaseFare": Adult_BaseFare, "Adult_Tax": Adult_Tax, "Adult_othercharge": Adult_othercharge, "Adult_yqtax": Adult_yqtax,"Adult_AdditionalTxnFeeOfrd":Adult_AdditionalTxnFeeOfrd,"Adult_AdditionalTxnFeePub":Adult_AdditionalTxnFeePub}
                 session['Adult'] = Adult
-            if pas_type == 2:
+            elif pas_type == 2:
                 Child_BaseFare = passenger_type['BaseFare'] / passenger_type['PassengerCount']
                 Child_Tax = passenger_type['Tax'] / passenger_type['PassengerCount']
                 Child_othercharge = passenger_type.get('Fare', {}).get('OtherCharges', 0) / passenger_type['PassengerCount']
                 Child_yqtax = passenger_type['YQTax'] / passenger_type['PassengerCount']
                 Child_AdditionalTxnFeeOfrd= passenger_type['AdditionalTxnFeeOfrd'] / passenger_type['PassengerCount']
                 Child_AdditionalTxnFeePub = passenger_type['AdditionalTxnFeePub'] / passenger_type['PassengerCount']
-
-                # print("Child_BaseFare", Child_BaseFare, "\nChild_Tax", Child_Tax, "\nChild_othercharge", Child_othercharge, "\nChild_yqtax", Child_yqtax,
-                #       "\nChild_AdditionalTxnFeeOfrd", Child_AdditionalTxnFeeOfrd, "\nChild_AdditionalTxnFeePub", Child_AdditionalTxnFeePub)
                 Child = {"Child_BaseFare":Child_BaseFare, "Child_Tax":Child_Tax, "Child_othercharge":Child_othercharge, "Child_yqtax":Child_yqtax,"Child_AdditionalTxnFeeOfrd": Child_AdditionalTxnFeeOfrd,"Child_AdditionalTxnFeePub":Child_AdditionalTxnFeePub}
                 session['Child'] = Child
                 
-            if pas_type == 3:
+            elif pas_type == 3:
                 Infant_BaseFare = passenger_type['BaseFare'] / passenger_type['PassengerCount']
                 Infant_Tax = passenger_type['Tax'] / passenger_type['PassengerCount']
                 Infant_othercharge = passenger_type.get('Fare', {}).get('OtherCharges', 0)/ passenger_type['PassengerCount']
                 Infant_yqtax = passenger_type['YQTax'] / passenger_type['PassengerCount'] 
                 Infant_AdditionalTxnFeeOfrd = passenger_type['AdditionalTxnFeeOfrd'] / passenger_type['PassengerCount']
                 Infant_AdditionalTxnFeePub = passenger_type['AdditionalTxnFeePub'] / passenger_type['PassengerCount']
-
-                # print("Infant_BaseFare", Infant_BaseFare, "\nInfant_Tax", Infant_Tax, "\nInfant_othercharge", Infant_othercharge, "\nInfant_yqtax", Infant_yqtax,
-                #       "\nInfant_AdditionalTxnFeeOfrd", Infant_AdditionalTxnFeeOfrd, "\nInfant_AdditionalTxnFeePub", Infant_AdditionalTxnFeePub)
-                
-            
             
                 Infant = {"Infant_BaseFare":Infant_BaseFare, "Infant_Tax":Infant_Tax,"Infant_othercharge":Infant_othercharge, "Infant_yqtax":Infant_yqtax,"Infant_AdditionalTxnFeeOfrd":Infant_AdditionalTxnFeeOfrd, "Infant_AdditionalTxnFeePub":Infant_AdditionalTxnFeePub}
                 session['Infant'] = Infant
 
         
-            return jsonify(result)
+        return jsonify(result)
     else:
         return jsonify({'error': 'An error occurred'})
 
@@ -181,12 +186,9 @@ def flight_search_fareQuote():
     
 
 
-def flight_search_SSR():
-    # Get the request payload 
+def flight_search_SSR(): 
     payload = request.get_json()
-    # print(payload)
-
-    # # Fetch values from the database
+    # Fetch values from the database
     search_details = db.session.query(SearchDetails).order_by(SearchDetails.id.desc()).first()
     tob_api_details = db.session.query(TobApiDetails).first()
     token_id = tob_api_details.tokenId if tob_api_details else None
@@ -217,31 +219,46 @@ def flight_search_SSR():
 
 def add_on_ssr():
     payload = request.get_json()
-    print(payload)
-    meal_selected = payload.get('Meal', [{}])[0].get('Code')
-    seat_selected = payload.get('Seats', [{}])[0].get('SeatNo')
-
+    if not payload:
+        return jsonify({'success':False})
     # Retrieve the meal and seat prices from the SSR response
     meal_price = None
     seat_price = None
 
     # Find the selected meal in the payload
     for meal in payload.get('Meal', []):
-        if meal['Code'] == meal_selected:
             meal_price = meal.get('Price')
             print(meal_price)
             break
   
     # Find the selected seat in the SSR response
     for seat in payload.get('Seats', []):
-        if seat['SeatNo'] == seat_selected:
             seat_price = seat.get('Price')
             print(seat_price)
             break
+    
+    # Find the selected seat in the SSR response
+    for baggage in payload.get('Baggage', []):
+            baggage_price = baggage.get('Price')
+            print(baggage_price)
+            break
+    user_uuid = str(uuid.uuid4())
+    flightuuid = str(uuid.uuid4())
+    current_datetime = datetime.now()
+    create_at = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+    update_at = create_at
+    userid = session.get('userid')
+    amount = int(meal_price+seat_price+baggage_price)
+    ssr = json.dumps(payload)
+    ssr_details = SSRDetails(uuid=user_uuid,ssr_details=ssr,user_id=userid,flight_uuid=flightuuid,create_at=create_at, update_at=update_at,amount=amount)
+    db.session.add(ssr_details)
+    db.session.commit()
+    db.session.flush()
 
     # Store the meal and seat prices in the session
     session['meal_price'] = meal_price
     session['seat_price'] = seat_price
+    session['baggage_price'] = baggage_price
 
     return jsonify({'success': True})
 
@@ -314,10 +331,6 @@ def update_fare_calendar():
 def booking_details():
     # Get the request payload
     payload = request.get_json()
-    Adult = session.get('Adult')
-    Child = session.get('Child')
-    Infant = session.get('Infant')
-    # print(payload)
     # Fetch values from the database
     search_details = db.session.query(SearchDetails).order_by(SearchDetails.id.desc()).first()
     tob_api_details = db.session.query(TobApiDetails).first()
@@ -339,64 +352,26 @@ def booking_details():
     # Process the response and return the result
     if response.status_code == 200:
         result = response.json()
-        return jsonify({"Adultfare_for_one":Adult,"Childfare_for_one":Child,"Infantfare_for_one":Infant,"Result":result})
+        return jsonify({"Result":result})
     else:
         return jsonify({'error': 'An error occurred'})
     
 
 
 def process_ticket():
-    is_lcc = session.get('is_lcc')
     payload = request.get_json()
+    flight_details = db.session.query(FlightDetails).order_by(FlightDetails.id.desc()).first()
+    is_lcc = flight_details.is_lcc if flight_details else None
 
-    if is_lcc is False:
-        # Call the book() function to make the booking request
-        book_response = book(payload)
-        search_details = db.session.query(SearchDetails).order_by(SearchDetails.id.desc()).first()
-        tob_api_details = db.session.query(TobApiDetails).first()
-        token_id = tob_api_details.tokenId if tob_api_details else None
-        end_user_ip = search_details.ip if search_details else None
-
-
-        # Check if the book() function succeeded
-        if 'Response' in book_response:
-            # print("****************",book_response)
-            # Obtain the PNR and BookingId from the book_response
-            if book_response['Response']['Response'] is None:
-                return json.jsonify({"msg":book_response['Response']['Error']['ErrorMessage']}),400
-
-            pnr = book_response['Response']['Response']['PNR']
-            booking_id = book_response['Response']['Response']['BookingId']
-            trace_id = book_response['Response']['TraceId']
-            # Construct the payload for the ticket() function using the obtained values
-            ticket_payload = {
-                "PNR": pnr,
-                "BookingId": booking_id,
-                "TraceId":trace_id,
-                "TokenId":token_id,
-                "EndUserIp":end_user_ip
-            }
-            print("ticket_payload",ticket_payload)
-
-            
-
-                # Call the ticket() function again with the updated payload
-            ticket_response = ticket(ticket_payload)
-
-                # Return the responses
-            return jsonify({"Data": {"book": book_response, "ticket": ticket_response}})
-            
-        else:
-            # Handle the case where the book() function failed
-            return jsonify({'error': 'Book function failed'})
-    elif is_lcc is True:
-        # Call the ticket() function directly
-        ticket_response = ticket(payload)
+    if is_lcc == 0:
+        ticket_respons = ticket_for_false_lcc(payload)
+        return jsonify({"Data": ticket_respons})
+        
+    elif is_lcc == 1:
+        ticket_response = ticket_for_true_lcc(payload)
         # Return the ticket response
         return jsonify({"Data": {"ticket": ticket_response}})
-    else:
-        return jsonify({'error': 'Invalid'})
-
+    
 
  
 def release_pnr_request():
@@ -517,11 +492,6 @@ def cancellation_charge():
 
 def City_Details():
     city_details = AirportCityCountryDetails.query.all()
-
-    # if not city_details:
-    #     # Handle the case when there are no records found
-    #     return jsonify([])
-
     schema = AirportCityCountryDetailsSchema(many=True)
     result = schema.dump(city_details)
     
@@ -573,4 +543,3 @@ def City_Details():
 
     
     
-

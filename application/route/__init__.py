@@ -1,4 +1,4 @@
-from application.__init__ import app
+
 from application.controller.user_controller import *
 from application.controller.flight_controller import *
 from application.controller.payment_controller import *
@@ -17,6 +17,12 @@ def register_route():
 @app.route('/api/v1/user/mobile-verify', methods=['POST'])
 def verify_register_route():
     return verify_otp_for_registration()
+
+
+# Resend OTP API
+@app.route('/api/v1/user/resend-otp', methods=['POST'])
+def resend_otp_route():
+    return resend_otp_for_registration()
 
 
 # Login API through otp
@@ -38,6 +44,11 @@ def reset_password_by_otp_route():
 @app.route('/api/v1/user/verify-reset-password-otp', methods=['POST'])
 def verify_reset_password_route():
     return verify_reset_otp()
+
+# Password reset API
+@app.route('/api/v1/user/reset-password-copy', methods=['POST'])
+def reset_password_route():
+    return reset_password()
 
 
 
@@ -105,11 +116,6 @@ def authenticate_route():
 def book_deatails_route():
     return booking_details()
 
-
-# API for ticket
-@app.route('/ticket', methods=['GET'])
-def ticket_route():
-    return ticket()
 
 # API for release pnr request
 @app.route('/api/v1/release-pnr-request', methods=['GET'])
