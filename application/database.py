@@ -9,7 +9,7 @@ from marshmallow import Schema, fields
 
 
 
-mysqlAnrari = parseConfig("anraridb","/home/nitish/Documents/Anrari/anrari.conf","=","mysql")
+mysqlAnrari = parseConfig("anraridb","/etc/anrari.conf","=","mysql")
 
 
 print(

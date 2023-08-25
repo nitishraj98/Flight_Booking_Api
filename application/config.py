@@ -18,7 +18,7 @@ class parseConfig:
             self.sms_url = config.get(context,'sms_url')
             self.auth_url = config.get(context,'auth_url')
             self.secret_key = config.get(context,'secret_key')
-jwt_secret = parseConfig("general","/home/nitish/Documents/Anrari/anrari.conf","=","misc")
+jwt_secret = parseConfig("general","/etc/anrari.conf","=","misc")
 
 app.config.update(
     TESTING = True,
