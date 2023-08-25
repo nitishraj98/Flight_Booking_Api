@@ -58,11 +58,11 @@ def register():
     existing_email = User.query.filter(User.email==data["email"]).first()
     existing_mob = User.query.filter(User.mobile_no == data["mobile_no"]).first()
     if existing_email and existing_mob:
-        return jsonify({'message': 'Email and Phone numbaer already exists'}), 406
+        return jsonify({'message': 'Email and Phone number already exists'}), 406
     elif existing_email:
         return jsonify({'message': 'Email already exists'}), 406
     elif existing_mob:
-        return jsonify({'message': 'Phone numbaer already exists'}), 406
+        return jsonify({'message': 'Phone number already exists'}), 406
 
 
     # Hash the password
@@ -132,7 +132,7 @@ def verify_otp_for_registration():
     access_token = create_access_token(identity=user.id)
     
     return jsonify({'access_token': access_token,'username': user.name,
-                'id': user.id, 'message': 'User Registration Successful','status':True})
+                'id': user.id, 'message': 'Registration Successful','status':True})
 
 def resend_otp_for_registration():
     data = request.get_json()
