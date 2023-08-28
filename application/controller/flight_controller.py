@@ -21,7 +21,6 @@ def flight_search():
     
     if int(payload['AdultCount'])>0 and total_count<10:
      # Construct the API URL 
-        print("**********",app.config)
         base_url = app.config['BASE_URL']
         api_url = f"{base_url}/Search"
 
@@ -46,6 +45,7 @@ def flight_search():
             
             db.session.add(search_details)
             db.session.commit()
+            db.session.flush()
             
 
             return jsonify(result)
@@ -136,13 +136,14 @@ def flight_search_fareQuote():
             flight_details.fare_quote = fare_quote
             flight_details.is_lcc = is_lcc
             db.session.commit()
+            db.session.flush()
 
         # Store the value in a session variable
         session['is_lcc'] = is_lcc
         session['Published_Fare'] = Published_Fare
         
         print("is_lcc",is_lcc)
-        print("published_fare",Published_Fare)
+        print("published_fare",Published_Fare)  
     
         fare_breakdown = result['Response']['Results']['FareBreakdown']
         Adult,Child,Infant = {},{},{}

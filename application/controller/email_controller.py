@@ -3,7 +3,6 @@ from application.controller import *
 
 # Function to send registration email
 def send_registration_email(email, name):
-    print(app.config)
     sender_email = app.config['SENDER_EMAIL']
     sender_password = app.config['SENDER_PASSWORD']
     receiver_email = email

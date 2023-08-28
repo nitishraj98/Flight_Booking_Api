@@ -1,4 +1,4 @@
-from application.__init__ import app
+from application import app
 from configparser import ConfigParser
 
 class parseConfig:

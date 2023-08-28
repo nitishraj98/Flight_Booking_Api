@@ -1,4 +1,4 @@
-from application.__init__ import app
+from application import app
 from application.config import parseConfig
 from flask_jwt_extended import JWTManager
 import pymysql

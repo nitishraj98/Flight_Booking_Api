@@ -149,6 +149,7 @@ def resend_otp_for_registration():
     # Update the OTP in the database
     user.otp = otp
     db.session.commit()
+    db.session.flush()
  
     mobile_no = data['mobile_no']
     # Construct the SMS URL
@@ -179,6 +180,7 @@ def login_by_otp():
     user.otp = otp
     
     db.session.commit()
+    db.session.flush()
  
    # Construct the SMS URL
     sms_url = app.config['SMS_URL']
@@ -209,6 +211,7 @@ def verify_login_otp():
 
     user.otp = None
     db.session.commit()
+    db.session.flush()
 
     access_token = create_access_token(identity=otp)
     session['access_token'] = access_token
@@ -297,6 +300,7 @@ def reset_password():
 
     user.password = hashed_password
     db.session.commit()
+    db.session.flush()
     access_token = create_access_token(identity=hashed_password)
     user_data = UserSchema().dump(user)
     user_data['reference_id'] = user_data.pop('id')
@@ -364,6 +368,7 @@ def authenticate():
         # Commit the changes to the database
         db.session.add(tob_api_details)
         db.session.commit()
+        db.session.flush()
 
         return jsonify(result)
 
