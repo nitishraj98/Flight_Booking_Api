@@ -2,7 +2,7 @@ from application.controller import *
 from flask import session
 import uuid
 from datetime import datetime
-from application.models.insurance_deatils import *
+from application.models.insurance_details import *
 from application.models.flight_details import FlightDetails,FlightDetails_schema
 from application.models.passenger_details import PassengerDetails
 from application.models.book_details import *

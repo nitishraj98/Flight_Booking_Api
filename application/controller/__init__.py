@@ -25,7 +25,7 @@ from application.models.flight_details import *
 from application.models.passenger_details import *
 from application.models.book_details import *
 from application.models.ticket_details import *
-from application.models.insurance_deatils import *
+from application.models.insurance_details import *
 from flask import session
 import uuid
 
