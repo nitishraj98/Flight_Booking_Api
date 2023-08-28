@@ -231,7 +231,7 @@ def ticket_for_true_lcc(payload):
         result = response.json()
         user_uuid = str(uuid.uuid4())
         flightuuid = str(uuid.uuid4())
-        current_datetime = datetime.now()
+        current_datetime = datetime.now() 
         create_at = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
         update_at = create_at
         is_active= True
