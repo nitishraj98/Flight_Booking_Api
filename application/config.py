@@ -18,6 +18,10 @@ class parseConfig:
             self.sms_url = config.get(context,'sms_url')
             self.auth_url = config.get(context,'auth_url')
             self.secret_key = config.get(context,'secret_key')
+            self.sender_email = config.get(context,'sender_email')
+            self.sender_password = config.get(context,'sender_password')
+
+
 jwt_secret = parseConfig("general","/etc/anrari.conf","=","misc")
 
 app.config.update(
@@ -32,11 +36,12 @@ app.config.update(
     BASE_URL=jwt_secret.base_url,
     SMS_URL=jwt_secret.sms_url,
     AUTH_URL=jwt_secret.auth_url,
-    SECRET_KEY=jwt_secret.secret_key
+    SECRET_KEY=jwt_secret.secret_key,
+    SENDER_EMAIL=jwt_secret.sender_email,
+    SENDER_PASSWORD=jwt_secret.sender_password
 
 
 )
-
 
 
 

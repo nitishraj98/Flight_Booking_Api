@@ -340,7 +340,6 @@ def logout():
 
 def authenticate():
     payload = request.get_json()
-    # print(payload)
     # Construct the API URL
     auth_url = app.config['AUTH_URL']
     api_url = f"{auth_url}/Authenticate"
@@ -351,7 +350,6 @@ def authenticate():
     if response.status_code == 200:
         result = response.json()
         token_id = result['TokenId']
-        print(token_id)
 
         # Update the existing record with user_id 1 or insert a new record if it doesn't exist
         tob_api_details = TobApiDetails.query.filter(TobApiDetails.id==1).first()
@@ -369,9 +367,6 @@ def authenticate():
 
         return jsonify(result)
 
-    else:
-        return jsonify({'error': 'An error occurred'})
-    
 
 
 

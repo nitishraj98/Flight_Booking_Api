@@ -5,7 +5,7 @@ from email.mime.text import MIMEText
 import smtplib
 from flask import Flask, request, jsonify,json
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
-from application.__init__ import app
+from application import app
 from application.controller.email_controller import send_registration_email
 from application.models.users import User, UserSchema, GenOtp, GenOtpSchema
 from application.models.authenticate import TobApiDetails, TobApiDetailsSchema
@@ -28,6 +28,8 @@ from application.models.ticket_details import *
 from application.models.insurance_details import *
 from flask import session
 import uuid
+from application.config import *
+
 
 
 

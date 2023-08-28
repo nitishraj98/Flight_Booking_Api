@@ -21,6 +21,7 @@ def flight_search():
     
     if int(payload['AdultCount'])>0 and total_count<10:
      # Construct the API URL 
+        print("**********",app.config)
         base_url = app.config['BASE_URL']
         api_url = f"{base_url}/Search"
 

@@ -1,11 +1,11 @@
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+from application.controller import *
+
 
 # Function to send registration email
 def send_registration_email(email, name):
-    sender_email = 'nitishtics@gmail.com'
-    sender_password = 'uvbooqspotsjrcto'
+    print(app.config)
+    sender_email = app.config['SENDER_EMAIL']
+    sender_password = app.config['SENDER_PASSWORD']
     receiver_email = email
 
     message = MIMEMultipart("alternative")
