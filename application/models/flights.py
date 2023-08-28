@@ -1,4 +1,4 @@
-from application.models.__init__ import *
+from application.models import *
 
 
 class SearchDetails(db.Model):
