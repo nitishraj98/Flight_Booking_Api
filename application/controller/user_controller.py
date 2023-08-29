@@ -333,17 +333,16 @@ def login_using_password():
 
 
 def logout():
-    # print(session)
     if 'username' in session:
         session.pop('username', None)
         session.pop('access_token', None)
-    # print(session)
     return jsonify({'message': 'You have successfully logged out.'})
 
 
 
 def authenticate():
-    payload = request.get_json()
+    
+    payload = request.get_json() 
     # Construct the API URL
     auth_url = app.config['AUTH_URL']
     api_url = f"{auth_url}/Authenticate"
@@ -351,7 +350,7 @@ def authenticate():
     response = requests.post(api_url, json=payload)
 
     # Process the response and store the TokenId in the database
-    if response.status_code == 200:
+    if response.status_code == 200: 
         result = response.json()
         token_id = result['TokenId']
 
@@ -371,7 +370,8 @@ def authenticate():
         db.session.flush()
 
         return jsonify(result)
-
+    
+ 
 
 
 

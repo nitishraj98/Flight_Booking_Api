@@ -143,7 +143,7 @@ def flight_search_fareQuote():
         session['Published_Fare'] = Published_Fare
         
         print("is_lcc",is_lcc)
-        print("published_fare",Published_Fare)  
+        print("published_fare",Published_Fare)   
     
         fare_breakdown = result['Response']['Results']['FareBreakdown']
         Adult,Child,Infant = {},{},{}
