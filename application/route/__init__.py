@@ -21,7 +21,7 @@ def verify_register_route():
 # Resend OTP API
 @app.route('/api/v1/user/resend-otp', methods=['POST'])
 def resend_otp_route():
-    return resend_otp_for_registration()
+    return resend_otp()
 
 
 # Login API through otp

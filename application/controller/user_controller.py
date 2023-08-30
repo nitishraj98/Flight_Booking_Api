@@ -109,7 +109,7 @@ def verify_otp_for_registration():
     })
 
 
-def resend_otp_for_registration():
+def resend_otp():
     data = request.get_json()
 
     # Check if the mobile number exists in the database
@@ -145,37 +145,53 @@ def resend_otp_for_registration():
 def login_by_otp():
     mobile_no = request.json.get('phoneno')
     user = User.query.filter_by(mobile_no=mobile_no).first()
+    user = UserSchema().dump(user)
+    user.pop('is_active')
 
     if not user:
-        return jsonify({'message': 'User not found', 'status': False}), 401
+        return jsonify({'message': 'User not found','status':False}), 404
 
-    otp = generate_otp()
-    user.otp = otp
+    db.session.query(GenOtp).delete()
     db.session.commit()
     db.session.flush()
 
-    sms_url = f"{app.config['SMS_URL']}&receiver={mobile_no}&route=TA&msgtype=1&sms=Your+Rirabh+Login+OTP+is+{otp}"
-    response = requests.get(sms_url)
+    otp = generate_otp()
 
-    user_data = {'reference_id': user.id, **UserSchema().dump(user)}
+    user['otp'] = otp
+
+    ins = GenOtp(**user)
+    db.session.add(ins)
+    db.session.commit()
+    db.session.flush()
+
+    # Construct the SMS URL
+    sms_url = app.config['SMS_URL']
+    sms_url = f"{sms_url}&receiver={mobile_no}&route=TA&msgtype=1&sms=Your+Rirabh+Login+OTP+is+{otp}"
+
+    response = requests.get(sms_url)
+    user_data = UserSchema().dump(user)
+    user_data['reference_id'] = user_data.pop('id')
+    
 
     if response.status_code != 200:
-        return jsonify({'message': 'Failed to send OTP'}), 406
+        return jsonify({'message': 'Failed to send OTP'}), 500
 
-    return jsonify({'message': 'OTP has been sent', 'status': True, 'reference_id':user_data['reference_id']}), 200
+    return jsonify({'message': 'OTP has been sent','status':True,'reference_id':user_data['reference_id']})
 
 
 def verify_login_otp():
-    otp = request.json.get('otp')
-    user = User.query.filter_by(otp=otp).first()
+    data = request.get_json()
 
-    if not user or user.otp != otp:
-        return jsonify({'message': 'Invalid OTP'}), 400
-
-    user.otp = None
+    user = GenOtp.query.filter_by(otp=data['otp']).first()
+ 
+    if not user or user.otp != data['otp']:
+        return jsonify({'message': 'Invalid OTP'}), 404
+    
+    GenOtp.query.filter(GenOtp.otp == data['otp']).delete()
     db.session.commit()
+    db.session.flush()
 
-    access_token = create_access_token(identity=otp)
+    access_token = create_access_token(identity=data['otp'])
     session.update({'access_token': access_token, 'username': user.name, 'userid': user.id})
 
     return jsonify({'access_token': access_token, 'username': user.name,
@@ -267,7 +283,6 @@ def reset_password():
 
 
 def login_using_password():
-    print(session)
     email = request.json['email']
     password = request.json['password']
 
@@ -292,7 +307,6 @@ def login_using_password():
 
 
 def logout():
-    print(session)
     if 'access_token' in session:
         session.pop('access_token', None)
     if 'username' in session:
@@ -301,6 +315,7 @@ def logout():
         session.pop('userid', None)
 
     return jsonify({'message': 'Logout successful', 'status': True}), 200
+
 
 
 def GetTokenId():
