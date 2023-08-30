@@ -29,12 +29,7 @@ from application.models.insurance_details import *
 from flask import session
 import uuid
 from application.config import *
-import razorpay
-# import uuid
-from datetime import datetime
-from application.models.payment import *
-import schedule
-import time
+
 
 
 

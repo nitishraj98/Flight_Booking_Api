@@ -12,6 +12,7 @@ def flight_search():
 
     tob_api_details = db.session.query(TobApiDetails).first()
     token_id = tob_api_details.tokenId if tob_api_details else None
+    print(token_id)
     if token_id:
         payload['TokenId'] = token_id
         payload['EndUserIp'] = request.headers.get('X-Forwarded-For', request.remote_addr)
@@ -223,7 +224,7 @@ def add_on_ssr():
     payload = request.get_json()
     if not payload:
         return jsonify({'success':False})
-    # Retrieve the meal and seat prices from the SSR response
+    
     meal_price = None
     seat_price = None
 
@@ -481,7 +482,6 @@ def cancellation_charge():
      # Construct the API URL
     base_url = app.config['BASE_URL']
     api_url = f"{base_url}/GetCancellationCharges  "
-
     response = requests.post(api_url, json=payload)
 
     if response.status_code == 200:

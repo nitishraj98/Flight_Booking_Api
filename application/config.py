@@ -20,6 +20,10 @@ class parseConfig:
             self.secret_key = config.get(context,'secret_key')
             self.sender_email = config.get(context,'sender_email')
             self.sender_password = config.get(context,'sender_password')
+            self.ClientId = config.get(context,'ClientId')
+            self.UserName = config.get(context,'UserName')
+            self.Password  = config.get(context,'Password')
+            self.EndUserIp = config.get(context,'EndUserIp')
 
 
 jwt_secret = parseConfig("general","/etc/anrari.conf","=","misc")
@@ -38,7 +42,12 @@ app.config.update(
     AUTH_URL=jwt_secret.auth_url,
     SECRET_KEY=jwt_secret.secret_key,
     SENDER_EMAIL=jwt_secret.sender_email,
-    SENDER_PASSWORD=jwt_secret.sender_password
+    SENDER_PASSWORD=jwt_secret.sender_password,
+    CLIENTID=jwt_secret.ClientId,
+    USERNAME=jwt_secret.UserName,
+    PASSWORD=jwt_secret.Password,
+    ENDUSERIP=jwt_secret.EndUserIp
+
 
 
 )

@@ -1,4 +1,3 @@
-
 from application.controller.user_controller import *
 from application.controller.flight_controller import *
 from application.controller.payment_controller import *
@@ -108,7 +107,7 @@ def process_ticket_route():
 # API for authenticate
 @app.route('/api/v1/authenticate', methods=['POST'])
 def authenticate_route():
-    return authenticate()
+    return GetTokenId()
 
 
 # API for booking details
