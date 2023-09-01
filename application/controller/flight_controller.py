@@ -12,7 +12,6 @@ def flight_search():
 
     tob_api_details = db.session.query(TobApiDetails).first()
     token_id = tob_api_details.tokenId if tob_api_details else None
-    print(token_id)
     if token_id:
         payload['TokenId'] = token_id
         payload['EndUserIp'] = request.headers.get('X-Forwarded-For', request.remote_addr)
@@ -47,11 +46,10 @@ def flight_search():
             db.session.add(search_details)
             db.session.commit()
             db.session.flush()
-            
 
             return jsonify(result)
-    else: 
-        return jsonify({'error': 'An error occurred'}) 
+    else:
+        return jsonify({'message':'Adult count must be 1 and greater than 1 and total count should be less than 10'})
 
 
 
@@ -99,8 +97,7 @@ def flight_search_farerules():
         db.session.flush()
     
         return jsonify(result)
-    else:
-        return jsonify({'error': 'An error occurred'})
+    
 
     
 

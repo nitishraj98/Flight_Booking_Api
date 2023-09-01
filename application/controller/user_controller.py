@@ -109,7 +109,7 @@ def verify_otp_for_registration():
     })
 
 
-def resend_otp():
+def resend_otp  ():
     data = request.get_json()
 
     # Check if the mobile number exists in the database

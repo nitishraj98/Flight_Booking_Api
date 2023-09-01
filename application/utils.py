@@ -13,8 +13,6 @@ from application.models.ticket_details import *
 
 def calculate_insurance(insurance_selected):
     total_count = session.get('total_count')
-    
-    
     # Check if total_count is None or not
     if total_count is None:
         total_count = 0  # Assign a default value of 0 if total_count is None
@@ -108,8 +106,7 @@ def book(payload):
     
             return (result)
          
-    else:
-        return 'An error occurred in book response'
+    
 
         
 def ticket_for_false_lcc(payload):
@@ -192,7 +189,6 @@ def ticket_for_true_lcc(payload):
     Adult = session.get('Adult')
     Child = session.get('Child')
     Infant = session.get('Infant')
-    print(session)
     
     for i in range(len(payload['Passengers'])):
         if i==0:

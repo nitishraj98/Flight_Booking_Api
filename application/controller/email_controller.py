@@ -13,7 +13,7 @@ def send_registration_email(email, name):
     message["To"] = receiver_email
 
     html = f"""
-    <!DOCTYPE html>
+   <!DOCTYPE html>  
 <html lang="en">
 <head>
     <meta charset="UTF-8"> 
@@ -24,17 +24,17 @@ def send_registration_email(email, name):
 
     <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse;">
         <tr>
-            <td bgcolor="#007BFF" style="padding: 40px 0; text-align: center; color: #ffffff;">
+            <td bgcolor="#FFA500" style="padding: 40px 0; text-align: center; color: #ffffff;">
                 <h1>Welcome to Anrari!</h1>
                 <p style="font-size: 18px;">Your Journey Begins Now</p>
             </td>
         </tr>
         <tr>
             <td bgcolor="#ffffff" style="padding: 40px;">
-                <h2>Dear {name},</h2>
+                <h2 style="color: #FFA500;">Dear {name},</h2>
                 <p>Thank you for registering on Anrari - Your Flight Booking Platform. We are excited to have you on board!</p>
                 <p>Start exploring our platform to discover the best flight deals and plan your next adventure with ease.</p>
-                <a href="[Your Website URL]" style="display: inline-block; padding: 10px 20px; background-color: #007BFF; color: #ffffff; text-decoration: none; border-radius: 5px;">Start Exploring</a>
+                <a href="[Your Website URL]" style="display: inline-block; padding: 10px 20px; background-color: #FFA500; color: #ffffff; text-decoration: none; border-radius: 5px;">Start Exploring</a>
             </td>
         </tr>
         <tr>
@@ -47,6 +47,7 @@ def send_registration_email(email, name):
 
 </body>
 </html>
+
 
     """
 
