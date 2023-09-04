@@ -247,6 +247,7 @@ def verify_reset_otp():
  
     if not user or user.otp != otp:
         return jsonify({'message': 'Invalid OTP'}), 404
+    
 
     return jsonify({ 'message': 'OTP Verified','status':True,'reference_id': user.id})
     
@@ -271,6 +272,9 @@ def reset_password():
 
     if not user:
         return json.jsonify({"message":'unverified user'}), 406
+    GenOtp.query.filter(GenOtp.otp ).delete()
+    db.session.commit()
+    db.session.flush()
 
     user.password = hashed_password
     db.session.commit()

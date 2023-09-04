@@ -163,20 +163,14 @@ def ticket_for_false_lcc(payload):
             db.session.add(ticket_details)
             db.session.commit()
             db.session.flush()
-            
-            # Return the responses
+            session.clear()
             return {"book": book_response, "ticket": result}
         
     else:
-        # Handle the case where the book() function failed
         return {"msg":"Book function failed"}
   
         
         
-
-             
-
-
 def ticket_for_true_lcc(payload):  
     # Fetch values from the database
     search_details = db.session.query(SearchDetails).order_by(SearchDetails.id.desc()).first()
@@ -188,7 +182,7 @@ def ticket_for_true_lcc(payload):
     Result_index = flight_details.result_index if flight_details else None
     Adult = session.get('Adult')
     Child = session.get('Child')
-    Infant = session.get('Infant')
+    Infant = session.get('Infant') 
     
     for i in range(len(payload['Passengers'])):
         if i==0:
@@ -246,10 +240,15 @@ def ticket_for_true_lcc(payload):
         db.session.add(ticket_details)
         db.session.commit()
         db.session.flush()
+        session.clear()
         return result
     else: 
         return jsonify({'error': 'An Error Occurred'})
     
+
+             
+
+
             
 
    

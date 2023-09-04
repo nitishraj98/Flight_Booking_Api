@@ -8,6 +8,7 @@ razorpay_client = razorpay.Client(auth=('rzp_test_WgaCObsDzKY0Uj', '2NBTrbPCTOt3
 
 
 def create_payment():
+    print(session)
     data = request.get_json()
     insurance_selected = data['insurance_selected']   
     insurance_amount = calculate_insurance(insurance_selected)
@@ -19,11 +20,16 @@ def create_payment():
     print("meal_price",meal_price)
     print("seat_price",seat_price)
     print("baggage_price",baggage_price)
+    print("insurance_amount",insurance_amount)
 
-    
+    iamount = insurance_amount if insurance_amount is not None else 0
+    mealamount = meal_price if meal_price is not None else 0
+    seatamount = seat_price if seat_price is not None else 0
+    baggageamount = baggage_price if baggage_price is not None else 0
  
     # Add insurance amount to the payment amount
-    total_amount =  insurance_amount  + Published_Fare + meal_price + seat_price + baggage_price
+    total_amount =  iamount  + Published_Fare + mealamount + seatamount + baggageamount
+    
     session['total_amount'] = total_amount
     print(total_amount)
     amount = int(total_amount * 100)  # Payment amount in paise as an integer (e.g., 1000 paise = ₹10)
@@ -36,12 +42,13 @@ def create_payment():
     Amount = total_amount
     gateway_name = 'razorpay'
     gateway_status = 'Pending'
+    ip = request.headers.get('X-Forwarded-For', request.remote_addr)
     flightuuid = str(uuid.uuid4())
     userid = session.get('userid')
     current_datetime = datetime.now()
     create_at = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
     update_at = create_at
-    payment_details = PaymentInformation(user_id=userid,flight_uuid=flightuuid,created_at=create_at, updated_at=update_at,gateway_name=gateway_name,gateway_status=gateway_status,orderid=order_id,transaction=transaction,amount=Amount)
+    payment_details = PaymentInformation(user_id=userid,flight_uuid=flightuuid,created_at=create_at, updated_at=update_at,gateway_name=gateway_name,gateway_status=gateway_status,orderid=order_id,transaction=transaction,amount=Amount,ip=ip)
     db.session.add(payment_details)
     db.session.commit()
     db.session.flush()
@@ -68,6 +75,13 @@ def confirm_payment():
     try:
         razorpay_client.utility.verify_payment_signature(params_dict)
         # Payment signature is valid, you can proceed with order fulfillment
+        payment_details = db.session.query(PaymentInformation).order_by(PaymentInformation.id.desc()).first()
+        gateway_status = 'success'
+        
+        if payment_details:
+            payment_details.gateway_status = gateway_status
+            db.session.commit()
+            db.session.flush()
         
         return jsonify({'status': 'success'})
     except razorpay.errors.SignatureVerificationError:
