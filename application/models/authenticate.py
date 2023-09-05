@@ -38,8 +38,3 @@ class TobApiDetailsSchema(ma.Schema):
    
     created_at = fields.DateTime()
     updated_at = fields.DateTime()
-
-
-
-TobApiDetails_schema = TobApiDetailsSchema()
-TobApiDetails_schema = TobApiDetailsSchema(many=True)

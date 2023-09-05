@@ -30,13 +30,4 @@ class SSRDetailsSchema(ma.Schema):
     create_at = fields.DateTime()
     update_at = fields.DateTime()
     amount = fields.Int()
-    
-
-   
-
-
-SSRDetails_schema = SSRDetailsSchema()
-SSRDetails_schema = SSRDetailsSchema(many=True)
-
-
 

@@ -3,7 +3,7 @@ from flask import session
 import uuid
 from datetime import datetime
 from application.models.insurance_details import *
-from application.models.flight_details import FlightDetails,FlightDetails_schema
+from application.models.flight_details import FlightDetails
 from application.models.passenger_details import PassengerDetails
 from application.models.book_details import *
 from application.models.ticket_details import * 

@@ -28,11 +28,6 @@ class InsuranceDetailsSchema(ma.Schema):
     created_at = fields.DateTime()
     updated_at = fields.DateTime()
     price = fields.Int()
-    
-
-InsuranceDetails_schema = InsuranceDetailsSchema()
-InsuranceDetails_schema = InsuranceDetailsSchema(many=True)
-   
 
 
 

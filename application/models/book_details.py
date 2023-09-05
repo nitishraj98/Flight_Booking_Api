@@ -24,11 +24,6 @@ class BookDetailsSchema(ma.Schema):
     is_active = fields.Int()
     create_at = fields.DateTime()
     update_at = fields.DateTime()
-    
-
-BookDetails_schema = BookDetailsSchema()
-BookDetails_schema = BookDetailsSchema(many=True)
-    
    
 
 

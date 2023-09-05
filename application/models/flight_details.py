@@ -41,10 +41,5 @@ class FlightDetailsSchema(ma.Schema):
     journey_type = fields.Int()
 
 
-
-FlightDetails_schema = FlightDetailsSchema()
-FlightDetails_schema = FlightDetailsSchema(many=True)
-
-
    
 

@@ -34,12 +34,7 @@ class UserSchema(ma.Schema):
     is_active = fields.Bool()   
     otp = fields.Str(required=True)
 
-
-
-
-user_schema = UserSchema()
-users_schema = UserSchema(many=True)
-
+    
 
 class GenOtp(db.Model):
     __tablename__ = 'generate_otp'

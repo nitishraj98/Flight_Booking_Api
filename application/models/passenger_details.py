@@ -33,10 +33,6 @@ class PassengerDetailsSchema(ma.Schema):
     is_active = fields.Int()
     create_at = fields.DateTime()
     update_at = fields.DateTime()
-
-PassengerDetails_schema = PassengerDetailsSchema()
-PassengerDetails_schema = PassengerDetailsSchema(many=True)
-    
     
 
    

@@ -28,11 +28,6 @@ class BookingInformationSchema(ma.Schema):
     is_active = fields.Int()
     created_at = fields.DateTime()
     updated_at = fields.DateTime()
-    
-
-BookingInformation_schema = BookingInformationSchema()
-BookingInformation_schema = BookingInformationSchema(many=True)
-    
    
 
 

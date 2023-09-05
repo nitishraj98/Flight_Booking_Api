@@ -38,10 +38,3 @@ class AirportCityCountryDetailsSchema(ma.Schema):
     Country_Code = fields.Str()
     Nationalty = fields.Str()
     Currency = fields.Str()
-    
-
-   
-
-
-AirportCityCountryDetails_schema = AirportCityCountryDetailsSchema()
-AirportCityCountryDetails_schema = AirportCityCountryDetailsSchema(many=True)

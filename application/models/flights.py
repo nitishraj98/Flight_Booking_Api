@@ -34,9 +34,3 @@ class SearchDetailsSchema(ma.Schema):
     is_active = fields.Bool()
     created_at = fields.DateTime()
     updated_at = fields.DateTime()
-
-   
-
-
-SearchDetails_schema = SearchDetailsSchema()
-SearchDetails_schema = SearchDetailsSchema(many=True)

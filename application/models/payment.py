@@ -39,12 +39,6 @@ class PaymentInformationSchema(ma.Schema):
     gateway_status = fields.Str()
     amount = fields.Int()
     search_id = fields.Int()
-
-
-PaymentInformation_Schema = PaymentInformationSchema()
-PaymentInformation_Schema = PaymentInformationSchema(many=True)
-   
-
     
     
 

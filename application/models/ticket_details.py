@@ -24,11 +24,6 @@ class TicketDetailsSchema(ma.Schema):
     is_active = fields.Int()
     created_at = fields.DateTime()
     updated_at = fields.DateTime()
-    
-
-TicketDetails_schema = TicketDetailsSchema()
-TicketDetails_schema = TicketDetailsSchema(many=True)
-    
    
 
 

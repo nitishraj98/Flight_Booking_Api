@@ -17,7 +17,7 @@ from flask import session
 from application.utils import book, calculate_insurance, ticket_for_true_lcc, ticket_for_false_lcc
 from application.models.city_details import AirportCityCountryDetails,AirportCityCountryDetailsSchema
 from application.models.ssr import SSRDetails,SSRDetailsSchema
-from application.models.flight_details import FlightDetails,FlightDetails_schema
+from application.models.flight_details import FlightDetails
 from application.models.payment import *
 from datetime import datetime
 import bcrypt
