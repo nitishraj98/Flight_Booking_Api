@@ -97,6 +97,8 @@ def flight_search_farerules():
         db.session.flush()
     
         return jsonify(result)
+    else:
+        return jsonify({'error':'Something went wrong'})
     
 
     
@@ -180,7 +182,7 @@ def flight_search_fareQuote():
         
         return jsonify(result)
     else:
-        return jsonify({'error': 'An error occurred'})
+        return jsonify({'error': 'Something went wrong'})
 
     
     
@@ -213,7 +215,7 @@ def flight_search_SSR():
         result = response.json()
         return jsonify(result)
     else:
-        return jsonify({'error': 'An error occurred'})
+        return jsonify({'error': 'Something went wrong'})
     
 
 
@@ -292,7 +294,7 @@ def get_fare_calendar():
         result = response.json()
         return jsonify(result)
     else:
-        return jsonify({'error': 'An error occurred'})
+        return jsonify({'error': 'Something went wrong'})
     
 
 
@@ -323,7 +325,7 @@ def update_fare_calendar():
         result = response.json()
         return jsonify(result)
     else:
-        return jsonify({'error': 'An error occurred'})
+        return jsonify({'error': 'Something went wrong'})
     
 
 
@@ -354,7 +356,7 @@ def booking_details():
         result = response.json()
         return jsonify({"Result":result})
     else:
-        return jsonify({'error': 'An error occurred'})
+        return jsonify({'error': 'Something went wrong'})
     
 
 
@@ -430,7 +432,7 @@ def release_pnr_request():
         result = response.json()
         return jsonify(result)
     else:
-        return jsonify({'error': 'An error occured'})  
+        return jsonify({'error': 'Something went wrong'})  
     
 
 
@@ -459,7 +461,7 @@ def send_change_request():
         result = response.json()
         return jsonify(result)
     else:
-        return jsonify({'error': 'An error occured'})   
+        return jsonify({'error': 'Something went wrong'})   
 
 
 
@@ -488,7 +490,7 @@ def send_change_request_status():
         result = response.json()
         return jsonify(result)
     else:
-        return jsonify({'error': 'An error occured'})  
+        return jsonify({'error': 'Something went wrong'})  
     
 
 
@@ -517,7 +519,7 @@ def cancellation_charge():
         result = response.json()
         return jsonify(result)
     else:
-        return jsonify({'error': 'An error occured'})  
+        return jsonify({'error': 'Something went wrong'})  
     
 
 

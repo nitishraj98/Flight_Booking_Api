@@ -168,7 +168,7 @@ def ticket_for_false_lcc(payload):
             return {"book": book_response, "ticket": result}
         
     else:
-        return {"msg":"Book function failed"}
+        return {"msg":"Something went wrong"}
   
         
         
@@ -243,7 +243,7 @@ def ticket_for_true_lcc(payload):
         db.session.flush()
         return result
     else: 
-        return jsonify({'error': 'An Error Occurred'})
+        return jsonify({'error': 'Something went wrong'})
     
 
              
