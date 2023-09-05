@@ -29,6 +29,7 @@ from application.models.insurance_details import *
 from flask import session
 import uuid
 from application.config import *
+from application.models.booking_information import *
 
 
 

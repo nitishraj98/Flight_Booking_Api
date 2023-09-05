@@ -7,6 +7,7 @@ from application.models.flight_details import FlightDetails,FlightDetails_schema
 from application.models.passenger_details import PassengerDetails
 from application.models.book_details import *
 from application.models.ticket_details import * 
+from application.models.booking_information import *
 
 
 
@@ -99,6 +100,7 @@ def book(payload):
             total_amount = session.get('total_amount')
             passenger_details = PassengerDetails(uuid=user_uuid,passenger_details=passengerdetails,user_id=userid,flight_uuid=flightuuid,is_active=is_active,created_at=create_at, updated_at=update_at)
             booking_details = BookDetails(user_id=userid,is_active=is_active,create_at=create_at, update_at=update_at,total_amount=total_amount,booking_details=Bookingdetails)
+
             db.session.add(passenger_details)
             db.session.add(booking_details)
             db.session.commit()
@@ -163,7 +165,6 @@ def ticket_for_false_lcc(payload):
             db.session.add(ticket_details)
             db.session.commit()
             db.session.flush()
-            session.clear()
             return {"book": book_response, "ticket": result}
         
     else:
@@ -240,7 +241,6 @@ def ticket_for_true_lcc(payload):
         db.session.add(ticket_details)
         db.session.commit()
         db.session.flush()
-        session.clear()
         return result
     else: 
         return jsonify({'error': 'An Error Occurred'})

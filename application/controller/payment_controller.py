@@ -8,7 +8,6 @@ razorpay_client = razorpay.Client(auth=('rzp_test_WgaCObsDzKY0Uj', '2NBTrbPCTOt3
 
 
 def create_payment():
-    print(session)
     data = request.get_json()
     insurance_selected = data['insurance_selected']   
     insurance_amount = calculate_insurance(insurance_selected)
@@ -22,13 +21,12 @@ def create_payment():
     print("baggage_price",baggage_price)
     print("insurance_amount",insurance_amount)
 
-    iamount = insurance_amount if insurance_amount is not None else 0
-    mealamount = meal_price if meal_price is not None else 0
-    seatamount = seat_price if seat_price is not None else 0
-    baggageamount = baggage_price if baggage_price is not None else 0
+    InsuranceAmount = insurance_amount if insurance_amount is not None else 0
+    MealAmount = meal_price if meal_price is not None else 0
+    SeatAmount = seat_price if seat_price is not None else 0
+    BaggageAmount = baggage_price if baggage_price is not None else 0
  
-    # Add insurance amount to the payment amount
-    total_amount =  iamount  + Published_Fare + mealamount + seatamount + baggageamount
+    total_amount =  InsuranceAmount  + Published_Fare + MealAmount + SeatAmount + BaggageAmount
     
     session['total_amount'] = total_amount
     print(total_amount)

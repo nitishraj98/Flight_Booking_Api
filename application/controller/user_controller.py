@@ -312,13 +312,14 @@ def login_using_password():
 
 def logout():
     if 'access_token' in session:
-        session.pop('access_token', None)
+         session.pop('access_token', None)
     if 'username' in session:
         session.pop('username', None)
     if 'userid' in session:
         session.pop('userid', None)
 
     return jsonify({'message': 'Logout successful', 'status': True}), 200
+    
 
 
 

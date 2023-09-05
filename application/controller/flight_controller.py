@@ -365,10 +365,42 @@ def process_ticket():
 
     if is_lcc == 0:
         ticket_respons = ticket_for_false_lcc(payload)
+        userid = session.get('userid')
+
+        current_datetime = datetime.now()
+        create_at = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+        update_at = create_at
+        is_active= True
+        pid = db.session.query(PaymentInformation).order_by(PaymentInformation.id.desc()).first()
+        paymentid = pid.id if pid else None
+        bookinghistory = json.dumps(ticket_respons)
+        bookingid = ticket_respons['book']['Response']['Response']['BookingId']
+        pnr = ticket_respons['book']['Response']['Response']['PNR']
+        booking_information = BookingInformation(user_id=userid,is_active=is_active,created_at=create_at, updated_at=update_at,booking_history=bookinghistory,pnr=pnr,booking_id=bookingid,payment_id=paymentid)
+        db.session.add(booking_information)
+        db.session.commit()
+        db.session.flush()
+        session.clear()
         return jsonify({"Data": ticket_respons})
         
     elif is_lcc == 1:
         ticket_response = ticket_for_true_lcc(payload)
+        userid = session.get('userid')
+
+        current_datetime = datetime.now()
+        create_at = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+        update_at = create_at
+        is_active= True
+        pid = db.session.query(PaymentInformation).order_by(PaymentInformation.id.desc()).first()
+        paymentid = pid.id if pid else None
+        bookinghistory = json.dumps(ticket_response)
+        bookingid = ticket_response['Response']['Response']['BookingId']
+        pnr = ticket_response['Response']['Response']['PNR']
+        booking_information = BookingInformation(user_id=userid,is_active=is_active,created_at=create_at, updated_at=update_at,booking_history=bookinghistory,pnr=pnr,booking_id=bookingid,payment_id=paymentid)
+        db.session.add(booking_information)
+        db.session.commit()
+        db.session.flush()
+        session.clear()
         # Return the ticket response
         return jsonify({"Data": {"ticket": ticket_response}})
     
