@@ -49,7 +49,7 @@ def flight_search():
 
             return jsonify(result)
     else:
-        return jsonify({'message':'Adult count must be 1 and greater than 1 and total count should be less than 10'})
+        return jsonify({'message':'Adult count must be 1 or more than 1 and total count must be less than 10'})
 
 
 

@@ -17,4 +17,4 @@ venv.bak/
 __pycache__/
 *.py[cod]
 anrari.conf
-anrari.conf
+*anrari.conf
