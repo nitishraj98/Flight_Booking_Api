@@ -300,6 +300,7 @@ def login_using_password():
             session['access_token'] = access_token
             session['username'] = user.name
             session['userid'] = user.id
+            print(session)
             
             return jsonify({'access_token': access_token,'username': user.name,
                 'id': user.id,'Email':user.email,'message': 'Login successful','status':True})
@@ -317,6 +318,7 @@ def logout():
         session.pop('username', None)
     if 'userid' in session:
         session.pop('userid', None)
+    print(session)
 
     return jsonify({'message': 'Logout successful', 'status': True}), 200
     

@@ -142,10 +142,10 @@ def cancellation_charge_route():
 # API for city details
 @app.route('/api/v1/citydetails', methods=['GET'])
 def city_details_route():
-    return City_Details() 
+    return Airport_Details() 
 
 # API for create payment
-@app.route('/api/v1/create-payment', methods=['POST'])
+@app.route('/api/v1/create-payment', methods=['GET'])
 def create_payment_route():
     return create_payment() 
 

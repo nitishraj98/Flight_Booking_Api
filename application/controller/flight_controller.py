@@ -128,21 +128,26 @@ def flight_search_fareQuote():
     # Process the response and return the result
     if response.status_code == 200:
         result = response.json()
-        flight_details = db.session.query(FlightDetails).order_by(FlightDetails.id.desc()).first()
+        try:
+            is_lcc = result['Response']['Results']
+        except KeyError:
+            return result['Response']['Error']['ErrorMessage']
         is_lcc = result['Response']['Results']['IsLCC']
+
         Published_Fare = result['Response']['Results']['Fare']['PublishedFare']
         fare_quote = json.dumps(result)
+        flight_details = db.session.query(FlightDetails).order_by(FlightDetails.id.desc()).first()
         if flight_details:
             flight_details.fare_quote = fare_quote
             flight_details.is_lcc = is_lcc
             db.session.commit()
-            db.session.flush()
+            db.session.flush() 
 
         # Store the value in a session variable
         session['is_lcc'] = is_lcc
         session['Published_Fare'] = Published_Fare
         
-        print("is_lcc",is_lcc)
+        print("is_lcc",is_lcc) 
         print("published_fare",Published_Fare)   
     
         fare_breakdown = result['Response']['Results']['FareBreakdown']
@@ -228,7 +233,7 @@ def add_on_ssr():
     seat_price = None
 
     # Find the selected meal in the payload
-    for meal in payload.get('Meal', []):
+    for meal in payload.get('MealDynamic', []):
             meal_price = meal.get('Price')
             print(meal_price)
             break
@@ -331,6 +336,7 @@ def update_fare_calendar():
 
     
 def booking_details():
+    print(session)
     # Get the request payload
     payload = request.get_json()
     # Fetch values from the database
@@ -361,53 +367,23 @@ def booking_details():
 
 
 def process_ticket():
+    print(session)
     payload = request.get_json()
     flight_details = db.session.query(FlightDetails).order_by(FlightDetails.id.desc()).first()
     is_lcc = flight_details.is_lcc if flight_details else None
 
     if is_lcc == 0:
         ticket_respons = ticket_for_false_lcc(payload)
-        userid = session.get('userid')
-
-        current_datetime = datetime.now()
-        create_at = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
-        update_at = create_at
-        is_active= True
-        pid = db.session.query(PaymentInformation).order_by(PaymentInformation.id.desc()).first()
-        paymentid = pid.id if pid else None
-        bookinghistory = json.dumps(ticket_respons)
-        bookingid = ticket_respons['book']['Response']['Response']['BookingId']
-        pnr = ticket_respons['book']['Response']['Response']['PNR']
-        booking_information = BookingInformation(user_id=userid,is_active=is_active,created_at=create_at, updated_at=update_at,booking_history=bookinghistory,pnr=pnr,booking_id=bookingid,payment_id=paymentid)
-        db.session.add(booking_information)
-        db.session.commit()
-        db.session.flush()
         session.clear()
         return jsonify({"Data": ticket_respons})
         
     elif is_lcc == 1:
         ticket_response = ticket_for_true_lcc(payload)
-        userid = session.get('userid')
-
-        current_datetime = datetime.now()
-        create_at = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
-        update_at = create_at
-        is_active= True
-        pid = db.session.query(PaymentInformation).order_by(PaymentInformation.id.desc()).first()
-        paymentid = pid.id if pid else None
-        bookinghistory = json.dumps(ticket_response)
-        bookingid = ticket_response['Response']['Response']['BookingId']
-        pnr = ticket_response['Response']['Response']['PNR']
-        booking_information = BookingInformation(user_id=userid,is_active=is_active,created_at=create_at, updated_at=update_at,booking_history=bookinghistory,pnr=pnr,booking_id=bookingid,payment_id=paymentid)
-        db.session.add(booking_information)
-        db.session.commit()
-        db.session.flush()
         session.clear()
-        # Return the ticket response
         return jsonify({"Data": {"ticket": ticket_response}})
     
-
- 
+  
+  
 def release_pnr_request():
     payload = request.get_json()
     # Fetch values from the database
@@ -523,7 +499,7 @@ def cancellation_charge():
     
 
 
-def City_Details():
+def Airport_Details():
     city_details = AirportCityCountryDetails.query.all()
     schema = AirportCityCountryDetailsSchema(many=True)
     result = schema.dump(city_details)

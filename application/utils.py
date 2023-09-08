@@ -8,6 +8,8 @@ from application.models.passenger_details import PassengerDetails
 from application.models.book_details import *
 from application.models.ticket_details import * 
 from application.models.booking_information import *
+from application.models.payment import *
+import jsonmerge
 
 
 
@@ -95,6 +97,7 @@ def book(payload):
             update_at = create_at
             is_active= True
             userid = session.get('userid')
+            
             passengerdetails = json.dumps(payload)
             Bookingdetails = json.dumps(result)
             total_amount = session.get('total_amount')
@@ -159,15 +162,22 @@ def ticket_for_false_lcc(payload):
             if not booking_id:
                 return result['Response']['Error']['ErrorMessage']
             booking_id = book_response['Response']['Response']['BookingId']
-    
+            pid = db.session.query(PaymentInformation).order_by(PaymentInformation.id.desc()).first()
+            paymentid = pid.id if pid else None
+            j1 = json.dumps(book_response)
+            j2 = json.dumps(result)
+            merg = jsonmerge.merge(j1,j2)
+            mergej= json.dumps(merg)
             
             ticket_details = TicketDetails(user_id=userid,is_active=is_active,created_at=create_at, updated_at=update_at,ticket_details=ticketdetails,booking_id=booking_id)
+            booking_information = BookingInformation(user_id=userid,is_active=is_active,created_at=create_at, updated_at=update_at,booking_history=mergej ,pnr=pnr,booking_id=booking_id,payment_id=paymentid)
+            db.session.add(booking_information)
             db.session.add(ticket_details)
             db.session.commit()
             db.session.flush()
             return {"book": book_response, "ticket": result}
         
-    else:
+    else: 
         return {"msg":"Something went wrong"}
   
         
@@ -191,7 +201,7 @@ def ticket_for_true_lcc(payload):
         else:
             payload['Passengers'][i]['IsLeadPax']=False
     
-
+ 
     for passenger in payload['Passengers']:
         if passenger['PaxType'] == 1:
             fare = Adult 
@@ -234,9 +244,13 @@ def ticket_for_true_lcc(payload):
         if not booking_id:
             return result['Response']['Error']['ErrorMessage']
         booking_id = result['Response']['Response']['BookingId']
-    
+        pnr = result['Response']['Response']['PNR']
+        pid = db.session.query(PaymentInformation).order_by(PaymentInformation.id.desc()).first()
+        paymentid = pid.id if pid else None
         passenger_details = PassengerDetails(uuid=user_uuid,passenger_details=passengerdetails,user_id=userid,flight_uuid=flightuuid,is_active=is_active,created_at=create_at, updated_at=update_at)
         ticket_details = TicketDetails(user_id=userid,is_active=is_active,created_at=create_at, updated_at=update_at,ticket_details=ticketdetails,booking_id=booking_id)
+        booking_information = BookingInformation(user_id=userid,is_active=is_active,created_at=create_at, updated_at=update_at,booking_history=ticketdetails,pnr=pnr,booking_id=booking_id,payment_id=paymentid)
+        db.session.add(booking_information)
         db.session.add(passenger_details)
         db.session.add(ticket_details)
         db.session.commit()
