@@ -110,6 +110,8 @@ def book(payload):
             db.session.flush()
     
             return (result)
+        else:
+            return ({'error':'Something went wrong'})
          
     
 
@@ -170,15 +172,15 @@ def ticket_for_false_lcc(payload):
             mergej= json.dumps(merg)
             
             ticket_details = TicketDetails(user_id=userid,is_active=is_active,created_at=create_at, updated_at=update_at,ticket_details=ticketdetails,booking_id=booking_id)
-            booking_information = BookingInformation(user_id=userid,is_active=is_active,created_at=create_at, updated_at=update_at,booking_history=mergej ,pnr=pnr,booking_id=booking_id,payment_id=paymentid)
+            booking_information = BookingInformation(user_id=userid,is_active=is_active,created_at=create_at, updated_at=update_at,booking_history=mergej,pnr=pnr,booking_id=booking_id,payment_id=paymentid)
             db.session.add(booking_information)
             db.session.add(ticket_details)
             db.session.commit()
             db.session.flush()
             return {"book": book_response, "ticket": result}
         
-    else: 
-        return {"msg":"Something went wrong"}
+        else: 
+            return ({"error":"Something went wrong"})
   
         
         
@@ -240,7 +242,7 @@ def ticket_for_true_lcc(payload):
         passengerdetails = json.dumps(payload)
         ticketdetails = json.dumps(result)
         
-        booking_id = result['Response']['Response']
+        booking_id = result['Response']['Response'] 
         if not booking_id:
             return result['Response']['Error']['ErrorMessage']
         booking_id = result['Response']['Response']['BookingId']

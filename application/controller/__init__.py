@@ -30,6 +30,7 @@ from flask import session
 import uuid
 from application.config import *
 from application.models.booking_information import *
+from application.models.user_deatails import *
 
 
 

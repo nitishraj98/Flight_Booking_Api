@@ -1,0 +1,56 @@
+from application.models import *
+
+class UserDetail(db.Model):
+    __tablename__ = 'user_details'
+
+    id = Column(INTEGER, primary_key=True)
+    first_name = Column(VARCHAR(255), nullable=False)
+    middle_name = Column(VARCHAR(255))
+    last_name = Column(VARCHAR(255))
+    gender = Column(VARCHAR(255))
+    profile_image_url = Column(LONGTEXT)
+    date_of_birth = Column(Date)
+    passport_no = Column(VARCHAR(255))
+    passport_expiry = Column(Date)
+    address_first = Column(LONGTEXT)
+    address_second = Column(LONGTEXT)
+    city = Column(VARCHAR(255))
+    country = Column(VARCHAR(255))
+    nationality = Column(VARCHAR(255))
+    gst_company_address = Column(LONGTEXT)
+    gst_company_contact_no = Column(Integer)
+    gst_company_name = Column(LONGTEXT)
+    gst_company_email = Column(VARCHAR(255))
+    gst_no = Column(VARCHAR(255))
+    is_active = Column(TINYINT(1), nullable=False, server_default=text("'1'"))
+    user_id = Column(INTEGER, nullable=False)
+    created_at = Column(TIMESTAMP)
+    updated_at = Column(TIMESTAMP)
+
+
+
+class UserDetailSchema(ma.Schema):
+    id = fields.Int()
+    first_name = fields.Str(required=True, error_messages={"required": "First name is required."})
+    middle_name = fields.Str()
+    last_name = fields.Str()
+    gender = fields.Str()
+    profile_image_url = fields.Str()
+    date_of_birth = fields.Date()
+    passport_no = fields.Str()
+    passport_expiry = fields.Date()
+    address_first = fields.Str()
+    address_second = fields.Str()
+    city = fields.Str()
+    country = fields.Str()
+    nationality = fields.Str()
+    gst_company_address = fields.Str()
+    gst_company_contact_no = fields.Int()
+    gst_company_name = fields.Str()
+    gst_company_email = fields.Str()
+    gst_no = fields.Str()
+    is_active = fields.Boolean()
+    user_id = fields.Int()
+    created_at = fields.DateTime(dump_only=True)
+    updated_at = fields.DateTime(dump_only=True)
+
