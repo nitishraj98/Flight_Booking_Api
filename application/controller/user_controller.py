@@ -193,6 +193,7 @@ def verify_login_otp():
 
     access_token = create_access_token(identity=data['otp'])
     session.update({'access_token': access_token, 'username': user.name, 'userid': user.id})
+    redis_conn.set("userid",user.id)
 
     return jsonify({'access_token': access_token, 'username': user.name,
                     'id': user.id, 'message': 'Login Successful', 'status': True})
@@ -300,7 +301,8 @@ def login_using_password():
             session['access_token'] = access_token
             session['username'] = user.name
             session['userid'] = user.id
-            print(session)
+
+            redis_conn.set("userid",user.id)
             
             return jsonify({'access_token': access_token,'username': user.name,
                 'id': user.id,'Email':user.email,'message': 'Login successful','status':True})
@@ -310,7 +312,7 @@ def login_using_password():
         return jsonify({'message': 'User not found','status':False}), 404 
      
 
-
+ 
 def logout():
     if 'access_token' in session:
          session.pop('access_token', None)
@@ -326,7 +328,6 @@ def logout():
 
 
 def GetTokenId():
-    
     payload = {
                 "ClientId": app.config['CLIENTID'],
                 "UserName": app.config['USERNAME'],

@@ -24,7 +24,11 @@ class parseConfig:
             self.UserName = config.get(context,'UserName')
             self.Password  = config.get(context,'Password')
             self.EndUserIp = config.get(context,'EndUserIp')
-
+        
+        if app == 'redis':
+            self.host = config.get(context,'host')
+            self.port = config.get(context,'port')
+            self.password = config.get(context,'password')
 
 jwt_secret = parseConfig("general","/etc/anrari.conf","=","misc")
 

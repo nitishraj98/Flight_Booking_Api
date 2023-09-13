@@ -9,7 +9,9 @@ from application.models.book_details import *
 from application.models.ticket_details import * 
 from application.models.booking_information import *
 from application.models.payment import *
+from application.models.fares import *
 import jsonmerge
+from application.redis import redis_conn
 
 
 
@@ -24,7 +26,7 @@ def calculate_insurance(insurance_selected):
         Price = insurance_amount
         user_uuid = str(uuid.uuid4())
         flightuuid = str(uuid.uuid4())
-        userid = session.get('userid')
+        userid = redis_conn.get("userid")
         current_datetime = datetime.now()
         create_at = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
         update_at = create_at
@@ -48,26 +50,27 @@ def book(payload):
     Trace_id = flight_details.trace_id if flight_details else None
     Result_index = flight_details.result_index if flight_details else None
     
-    Adult = session.get('Adult')
-    Child = session.get('Child')
-    Infant = session.get('Infant')
-    pasngr = payload["Passengers"]
-    for i in range(len(pasngr)):
-       
+    tax = db.session.query(Fare).order_by(Fare.id.desc()).first()
+    Adult = tax.adult if tax else None
+    Infant = tax.infant if tax else None
+    Child = tax.child if tax else None
+
+    
+    for i in range(len(payload['Passengers'])):
         if i==0:
-            pasngr[i]['IsLeadPax']=True
+            payload['Passengers'][i]['IsLeadPax']=True
         else:
-            pasngr[i]['IsLeadPax']=False
+            payload['Passengers'][i]['IsLeadPax']=False
     
  
-    for passenger in pasngr:
-        
+    for passenger in payload['Passengers']:
         if passenger['PaxType'] == 1:
-            fare = Adult
-        elif passenger['PaxType'] == 2:
-            fare = Child
-        else:
-            fare = Infant
+            fare = json.loads(Adult) 
+            print(type(fare))
+        if passenger['PaxType'] == 2:
+            fare = json.loads(Child)
+        if passenger['PaxType'] == 3:
+            fare = json.loads(Infant)
         passenger['Fare'] = fare
         
 
@@ -96,7 +99,7 @@ def book(payload):
             create_at = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
             update_at = create_at
             is_active= True
-            userid = session.get('userid')
+            userid = redis_conn.get("userid")
             
             passengerdetails = json.dumps(payload)
             Bookingdetails = json.dumps(result)
@@ -155,7 +158,7 @@ def ticket_for_false_lcc(payload):
             create_at = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
             update_at = create_at
             is_active= True
-            userid = session.get('userid')
+            userid = redis_conn.get("userid")
             
             ticketdetails = json.dumps(result)
             
@@ -184,7 +187,7 @@ def ticket_for_false_lcc(payload):
   
         
         
-def ticket_for_true_lcc(payload):  
+def ticket_for_true_lcc(payload): 
     # Fetch values from the database
     search_details = db.session.query(SearchDetails).order_by(SearchDetails.id.desc()).first()
     tob_api_details = db.session.query(TobApiDetails).first()
@@ -193,9 +196,11 @@ def ticket_for_true_lcc(payload):
     end_user_ip = search_details.ip if search_details else None
     Trace_id = flight_details.trace_id if flight_details else None
     Result_index = flight_details.result_index if flight_details else None
-    Adult = session.get('Adult')
-    Child = session.get('Child')
-    Infant = session.get('Infant') 
+    tax = db.session.query(Fare).order_by(Fare.id.desc()).first()
+    Adult = tax.adult if tax else None
+    Infant = tax.infant if tax else None
+    Child = tax.child if tax else None
+
     
     for i in range(len(payload['Passengers'])):
         if i==0:
@@ -206,11 +211,12 @@ def ticket_for_true_lcc(payload):
  
     for passenger in payload['Passengers']:
         if passenger['PaxType'] == 1:
-            fare = Adult 
+            fare = json.loads(Adult) 
+            print(type(fare))
         if passenger['PaxType'] == 2:
-            fare = Child
+            fare = json.loads(Child)
         if passenger['PaxType'] == 3:
-            fare = Infant
+            fare = json.loads(Infant)
         passenger['Fare'] = fare
 
     # Update the payload with the fetched values
@@ -232,13 +238,14 @@ def ticket_for_true_lcc(payload):
     # Process the response and return the result
     if response.status_code == 200: 
         result = response.json()
+        # print("responsee",result)
         user_uuid = str(uuid.uuid4())
         flightuuid = str(uuid.uuid4())
         current_datetime = datetime.now() 
         create_at = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
         update_at = create_at
         is_active= True
-        userid = session.get('userid')
+        userid = redis_conn.get("userid")
         passengerdetails = json.dumps(payload)
         ticketdetails = json.dumps(result)
         
@@ -257,7 +264,7 @@ def ticket_for_true_lcc(payload):
         db.session.add(ticket_details)
         db.session.commit()
         db.session.flush()
-        return result
+        return (result)
     else: 
         return jsonify({'error': 'Something went wrong'})
     
