@@ -382,7 +382,7 @@ def process_ticket():
         session.clear()
         return jsonify({"Data": {"ticket": ticket_response}})
     
-  
+   
   
 def release_pnr_request():
     payload = request.get_json()
