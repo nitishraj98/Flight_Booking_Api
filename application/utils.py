@@ -14,9 +14,9 @@ import jsonmerge
 from application.redis import redis_conn
 
 
+   
 
-
-def calculate_insurance(insurance_selected):
+def calculate_insurance(insurance_selected,usrid):
     total_count = session.get('total_count')
     # Check if total_count is None or not
     if total_count is None:
@@ -26,7 +26,7 @@ def calculate_insurance(insurance_selected):
         Price = insurance_amount
         user_uuid = str(uuid.uuid4())
         flightuuid = str(uuid.uuid4())
-        userid = redis_conn.get("userid")
+        userid = usrid
         current_datetime = datetime.now()
         create_at = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
         update_at = create_at
@@ -36,11 +36,11 @@ def calculate_insurance(insurance_selected):
         db.session.flush()
         total_amount = insurance_amount
         return total_amount   
-  
+   
 
 
 
-def book(payload):
+def book(payload,data):
     # Fetch values from the database 
     search_details = db.session.query(SearchDetails).order_by(SearchDetails.id.desc()).first()
     tob_api_details = db.session.query(TobApiDetails).first()
@@ -66,7 +66,6 @@ def book(payload):
     for passenger in payload['Passengers']:
         if passenger['PaxType'] == 1:
             fare = json.loads(Adult) 
-            print(type(fare))
         if passenger['PaxType'] == 2:
             fare = json.loads(Child)
         if passenger['PaxType'] == 3:
@@ -99,7 +98,7 @@ def book(payload):
             create_at = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
             update_at = create_at
             is_active= True
-            userid = redis_conn.get("userid")
+            userid = data
             
             passengerdetails = json.dumps(payload)
             Bookingdetails = json.dumps(result)
@@ -119,9 +118,9 @@ def book(payload):
     
 
         
-def ticket_for_false_lcc(payload):
+def ticket_for_false_lcc(payload,data):
     # Call the book() function to make the booking request
-    book_response = book(payload)
+    book_response = book(payload,data)
     search_details = db.session.query(SearchDetails).order_by(SearchDetails.id.desc()).first()
     tob_api_details = db.session.query(TobApiDetails).first()
     token_id = tob_api_details.tokenId if tob_api_details else None
@@ -158,7 +157,7 @@ def ticket_for_false_lcc(payload):
             create_at = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
             update_at = create_at
             is_active= True
-            userid = redis_conn.get("userid")
+            userid = data
             
             ticketdetails = json.dumps(result)
             
@@ -180,14 +179,14 @@ def ticket_for_false_lcc(payload):
             db.session.add(ticket_details)
             db.session.commit()
             db.session.flush()
-            return {"book": book_response, "ticket": result}
+            return {"book": book_response, "ticket": result,"message":"Your Ticket has been sent to Email"}
         
         else: 
             return ({"error":"Something went wrong"})
   
         
         
-def ticket_for_true_lcc(payload): 
+def ticket_for_true_lcc(payload,data): 
     # Fetch values from the database
     search_details = db.session.query(SearchDetails).order_by(SearchDetails.id.desc()).first()
     tob_api_details = db.session.query(TobApiDetails).first()
@@ -212,7 +211,6 @@ def ticket_for_true_lcc(payload):
     for passenger in payload['Passengers']:
         if passenger['PaxType'] == 1:
             fare = json.loads(Adult) 
-            print(type(fare))
         if passenger['PaxType'] == 2:
             fare = json.loads(Child)
         if passenger['PaxType'] == 3:
@@ -245,7 +243,7 @@ def ticket_for_true_lcc(payload):
         create_at = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
         update_at = create_at
         is_active= True
-        userid = redis_conn.get("userid")
+        userid = data
         passengerdetails = json.dumps(payload)
         ticketdetails = json.dumps(result)
         
@@ -263,7 +261,8 @@ def ticket_for_true_lcc(payload):
         db.session.add(passenger_details)
         db.session.add(ticket_details)
         db.session.commit()
-        db.session.flush()
+        db.session.flush() 
+        result["message"] = "Your Ticket has been sent to Email"
         return (result)
     else: 
         return jsonify({'error': 'Something went wrong'})

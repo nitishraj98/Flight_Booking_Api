@@ -4,7 +4,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
 from flask import Flask, request, jsonify,json
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required
+from flask_jwt_extended import  JWTManager, create_access_token, jwt_required
 from application import app
 from application.controller.email_controller import send_registration_email
 from application.models.users import User, UserSchema, GenOtp, GenOtpSchema

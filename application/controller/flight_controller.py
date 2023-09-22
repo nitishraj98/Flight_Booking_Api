@@ -1,5 +1,6 @@
 from application.controller import *
 from datetime import datetime
+from flask_jwt_extended import get_jwt
 
 
 
@@ -128,9 +129,9 @@ def flight_search_fareQuote():
         update_at = create_at
         is_active= True
         result_index = payload['ResultIndex']
-        print("Resultindex:-",result_index)
+        # print("Resultindex:-",result_index)
         trace_id = payload['TraceId']
-        print("Traceid:-",trace_id)
+        # print("Traceid:-",trace_id)
         journey_type =session.get('journeytype')
         fare_quote = json.dumps(result)
         flight_details = FlightDetails(uuid=uid,is_active=is_active,create_at=create_at, update_at=update_at,result_index=result_index,trace_id=trace_id,fare_quote=fare_quote,journey_type=journey_type,is_lcc=is_lcc)
@@ -141,8 +142,8 @@ def flight_search_fareQuote():
         session['is_lcc'] = is_lcc
         session['Published_Fare'] = Published_Fare
         
-        print("is_lcc",is_lcc) 
-        print("published_fare",Published_Fare)   
+        # print("is_lcc",is_lcc) 
+        # print("published_fare",Published_Fare)   
     
         fare_breakdown = result['Response']['Results']['FareBreakdown']
         Adult,Child,Infant = {},{},{}
@@ -156,7 +157,7 @@ def flight_search_fareQuote():
                 Adult_AdditionalTxnFeeOfrd = passenger_type['AdditionalTxnFeeOfrd'] / passenger_type['PassengerCount']
                 Adult_AdditionalTxnFeePub = passenger_type['AdditionalTxnFeePub'] / passenger_type['PassengerCount']
                 Adult = {"Adult_BaseFare": Adult_BaseFare, "Adult_Tax": Adult_Tax, "Adult_othercharge": Adult_othercharge, "Adult_yqtax": Adult_yqtax,"Adult_AdditionalTxnFeeOfrd":Adult_AdditionalTxnFeeOfrd,"Adult_AdditionalTxnFeePub":Adult_AdditionalTxnFeePub}
-                # session['Adult'] = Adult
+                
                                
             elif pas_type == 2:
                 Child_BaseFare = passenger_type['BaseFare'] / passenger_type['PassengerCount']
@@ -166,7 +167,7 @@ def flight_search_fareQuote():
                 Child_AdditionalTxnFeeOfrd= passenger_type['AdditionalTxnFeeOfrd'] / passenger_type['PassengerCount']
                 Child_AdditionalTxnFeePub = passenger_type['AdditionalTxnFeePub'] / passenger_type['PassengerCount']
                 Child = {"Child_BaseFare":Child_BaseFare, "Child_Tax":Child_Tax, "Child_othercharge":Child_othercharge, "Child_yqtax":Child_yqtax,"Child_AdditionalTxnFeeOfrd": Child_AdditionalTxnFeeOfrd,"Child_AdditionalTxnFeePub":Child_AdditionalTxnFeePub}
-                # session['Child'] = Child
+                
                 
             elif pas_type == 3:
                 Infant_BaseFare = passenger_type['BaseFare'] / passenger_type['PassengerCount']
@@ -177,15 +178,13 @@ def flight_search_fareQuote():
                 Infant_AdditionalTxnFeePub = passenger_type['AdditionalTxnFeePub'] / passenger_type['PassengerCount']
             
                 Infant = {"Infant_BaseFare":Infant_BaseFare, "Infant_Tax":Infant_Tax,"Infant_othercharge":Infant_othercharge, "Infant_yqtax":Infant_yqtax,"Infant_AdditionalTxnFeeOfrd":Infant_AdditionalTxnFeeOfrd, "Infant_AdditionalTxnFeePub":Infant_AdditionalTxnFeePub}
-                # session['Infant'] = Infant
+                
         aci = {"adult":json.dumps(Adult),"child":json.dumps(Child),"infant":json.dumps(Infant)}
-        print("aci",aci)
         fare = Fare(**aci)
         db.session.add(fare)
         db.session.commit()
         db.session.flush()
 
-        print(session)
         return jsonify(result)
     else:
         return jsonify({'error': 'Something went wrong'})
@@ -224,9 +223,10 @@ def flight_search_SSR():
         return jsonify({'error': 'Something went wrong'})
     
 
-
+@jwt_required()
 def add_on_ssr():
     payload = request.get_json()
+    data = get_jwt()["sub"]["userid"] 
     if not payload:
         return jsonify({'success':False})
     
@@ -255,7 +255,7 @@ def add_on_ssr():
     current_datetime = datetime.now()
     create_at = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
     update_at = create_at
-    userid = redis_conn.get("userid")
+    userid = data
     amount = int(meal_price+seat_price+baggage_price)
     ssr = json.dumps(payload)
     ssr_details = SSRDetails(uuid=user_uuid,ssr_details=ssr,user_id=userid,flight_uuid=flightuuid,create_at=create_at, update_at=update_at,amount=amount)
@@ -337,7 +337,6 @@ def update_fare_calendar():
 
     
 def booking_details():
-    print(session)
     # Get the request payload
     payload = request.get_json()
     # Fetch values from the database
@@ -366,20 +365,20 @@ def booking_details():
         return jsonify({'error': 'Something went wrong'})
     
 
-
+@jwt_required()
 def process_ticket():
-    print(session)
     payload = request.get_json()
+    data = get_jwt()["sub"]["userid"] 
     flight_details = db.session.query(FlightDetails).order_by(FlightDetails.id.desc()).first()
     is_lcc = flight_details.is_lcc if flight_details else None
 
     if is_lcc == 0:
-        ticket_respons = ticket_for_false_lcc(payload)
+        ticket_respons = ticket_for_false_lcc(payload,data)
         session.clear()
         return jsonify({"Data": ticket_respons})
         
     elif is_lcc == 1:
-        ticket_response = ticket_for_true_lcc(payload)
+        ticket_response = ticket_for_true_lcc(payload,data)
         session.clear()
         return jsonify({"Data": {"ticket": ticket_response}})
     

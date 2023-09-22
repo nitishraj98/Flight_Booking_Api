@@ -1,16 +1,18 @@
 import razorpay
 import uuid
 from datetime import datetime
-from application.controller.__init__ import calculate_insurance,request,jsonify,session
+from application.controller.__init__ import calculate_insurance,request,jsonify,session,jwt_required
 from application.models.payment import *
+from flask_jwt_extended import get_jwt
 
 razorpay_client = razorpay.Client(auth=('rzp_test_WgaCObsDzKY0Uj', '2NBTrbPCTOt3ZxuOnCpyhV3K'))
 
-
+@jwt_required()
 def create_payment():
     data = request.get_json()
+    usrid = get_jwt()["sub"]["userid"] 
     insurance_selected = data['insurance_selected']   
-    insurance_amount = calculate_insurance(insurance_selected)
+    insurance_amount = calculate_insurance(insurance_selected,usrid)
     Published_Fare = session.get('Published_Fare')
     meal_price = session.get('meal_price')
     seat_price = session.get('seat_price')
@@ -42,7 +44,7 @@ def create_payment():
     gateway_status = 'Pending'
     ip = request.headers.get('X-Forwarded-For', request.remote_addr)
     flightuuid = str(uuid.uuid4())
-    userid = session.get('userid')
+    userid = usrid
     current_datetime = datetime.now()
     create_at = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
     update_at = create_at

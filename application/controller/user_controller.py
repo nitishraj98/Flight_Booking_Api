@@ -12,7 +12,7 @@ def is_valid_email(email):
 
 def is_strong_password(password):
     min_length = 8
-    criteria = [
+    criteria = [ 
         re.search(r'[A-Z]', password),
         re.search(r'[a-z]', password),
         re.search(r'\d', password),
@@ -191,7 +191,7 @@ def verify_login_otp():
     db.session.commit()
     db.session.flush()
 
-    access_token = create_access_token(identity=data['otp'])
+    access_token = create_access_token(identity={"otp":data['otp'],"userid":user.id})
     session.update({'access_token': access_token, 'username': user.name, 'userid': user.id})
     redis_conn.set("userid",user.id)
 
@@ -297,7 +297,7 @@ def login_using_password():
     if user:
         # Check if the password matches
         if bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
-            access_token = create_access_token(identity=email)
+            access_token = create_access_token(identity={"email":email,"userid":user.id})
             session['access_token'] = access_token
             session['username'] = user.name
             session['userid'] = user.id
