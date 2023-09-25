@@ -24,7 +24,7 @@ app.config['SQLALCHEMY_BINDS'] = {
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
-# Initialize SQLAlchemy and Marshmallow
+# Initialize SQLAlchemy and Marshmallow 
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 jwt = JWTManager(app)

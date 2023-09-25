@@ -9,7 +9,6 @@ venv.bak/
 /application/controller/__pycache__
 /application/models/__pycache__
 /application/route/__pycache__
-/application/utility/__pycache__
 /venv
 /env
 *.pyc
@@ -17,4 +16,4 @@ venv.bak/
 __pycache__/
 *.py[cod]
 anrari.conf
-*anrari.conf
+*anrari.conf 

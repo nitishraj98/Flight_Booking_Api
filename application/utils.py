@@ -110,7 +110,6 @@ def book(payload,data):
             db.session.add(booking_details)
             db.session.commit()
             db.session.flush()
-    
             return (result)
         else:
             return ({'error':'Something went wrong'})
