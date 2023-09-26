@@ -11,7 +11,7 @@ from application.models.booking_information import *
 from application.models.payment import *
 from application.models.fares import *
 import jsonmerge
-from application.redis import redis_conn
+
 
 
    

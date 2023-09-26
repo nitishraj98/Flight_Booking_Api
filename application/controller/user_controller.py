@@ -193,7 +193,7 @@ def verify_login_otp():
 
     access_token = create_access_token(identity={"otp":data['otp'],"userid":user.id})
     session.update({'access_token': access_token, 'username': user.name, 'userid': user.id})
-    redis_conn.set("userid",user.id)
+    
 
     return jsonify({'access_token': access_token, 'username': user.name,
                     'id': user.id, 'message': 'Login Successful', 'status': True})
@@ -301,8 +301,6 @@ def login_using_password():
             session['access_token'] = access_token
             session['username'] = user.name
             session['userid'] = user.id
-
-            redis_conn.set("userid",user.id)
             
             return jsonify({'access_token': access_token,'username': user.name,
                 'id': user.id,'Email':user.email,'message': 'Login successful','status':True})

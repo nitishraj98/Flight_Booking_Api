@@ -12,7 +12,6 @@ from application.models.authenticate import TobApiDetails, TobApiDetailsSchema
 from application.models.flights import SearchDetails, SearchDetailsSchema
 from application.database import db
 from application.controller.payment_controller import *
-from flask_bcrypt import Bcrypt
 from flask import session
 from application.utils import book, calculate_insurance, ticket_for_true_lcc, ticket_for_false_lcc
 from application.models.city_details import AirportCityCountryDetails,AirportCityCountryDetailsSchema
@@ -32,7 +31,7 @@ from application.config import *
 from application.models.booking_information import *
 from application.models.user_deatails import *
 from application.models.fares import *
-from application.redis import redis_conn
+
 
 
 

@@ -30,7 +30,7 @@ class parseConfig:
             self.port = config.get(context,'port')
             self.password = config.get(context,'password')
 
-jwt_secret = parseConfig("general","/etc/anrari.conf","=","misc")
+jwt_secret = parseConfig("general","/home/ubuntu/Documents/Anrari/anrari.conf","=","misc")
 
 app.config.update(
     TESTING = True,
