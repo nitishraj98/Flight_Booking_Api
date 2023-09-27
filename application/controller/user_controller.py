@@ -1,5 +1,7 @@
 from application.controller import *
 import re
+from flask_bcrypt import Bcrypt
+
 
 def generate_otp():
     return random.randint(100000, 999999)
