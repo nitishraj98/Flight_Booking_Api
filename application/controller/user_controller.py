@@ -73,6 +73,8 @@ def register():
 
     return jsonify({'message': 'Otp has been sent!', 'reference_id': user['reference_id']}), 200
 
+
+
 def verify_otp_for_registration():
     data = request.get_json()
     
@@ -320,7 +322,6 @@ def logout():
         session.pop('username', None)
     if 'userid' in session:
         session.pop('userid', None)
-    print(session)
 
     return jsonify({'message': 'Logout successful', 'status': True}), 200
     
